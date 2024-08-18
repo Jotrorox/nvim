@@ -26,3 +26,5 @@ vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
 
+vim.o.background = "dark"
+vim.cmd([[colorscheme gruvbox]])
