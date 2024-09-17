@@ -1,5 +1,6 @@
 return {
     {
-        "ziglang/zig.vim"
+        "ziglang/zig.vim",
+        ft = { "zig" },
     }
 }
