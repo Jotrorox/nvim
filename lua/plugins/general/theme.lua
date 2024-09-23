@@ -1,16 +1,16 @@
 return {
-  --	{ 
-  --		"catppuccin/nvim", 
-  --		name = "catppuccin", 
-  --		priority = 1000, 
-  --        config = function()
-  --            require("catppuccin").setup({
-  --                flavour = "mocha", -- latte, frappe, macchiato, mocha
-  --                transparent_background = false, -- disables setting the background color.
-  --            })
-  --            vim.cmd.colorscheme("catppuccin")
-  --        end,
-  --	}
+  { 
+    "catppuccin/nvim", 
+    name = "catppuccin", 
+    priority = 1000, 
+    config = function()
+      require("catppuccin").setup({
+        flavour = "mocha", -- latte, frappe, macchiato, mocha
+        transparent_background = false, -- disables setting the background color.
+      })
+      vim.cmd.colorscheme("catppuccin")
+    end,
+  }
   --    { 
   --        "ellisonleao/gruvbox.nvim", 
   --        priority = 1000 , 
@@ -28,12 +28,12 @@ return {
   --      vim.cmd.colorscheme("nord")
   --    end,
   --  },
-  {
-    "ntk148v/komau.vim",
-    lazy = false,
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme("komau")
-    end,
-  }
+  -- {
+  --   "ntk148v/komau.vim",
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function()
+  --     vim.cmd.colorscheme("komau")
+  --   end,
+  -- }
 }
