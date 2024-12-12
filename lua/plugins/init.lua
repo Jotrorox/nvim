@@ -6,7 +6,14 @@ local Plugins = {
   {'numToStr/Comment.nvim', config = true, event = 'VeryLazy'},
 
   -- Themes
-	{ "ellisonleao/gruvbox.nvim", priority = 1000 , config = true, opts = ...}
+	{ 
+		"ellisonleao/gruvbox.nvim", 
+		priority = 1000 , 
+		config = true, 
+		opts = {
+			transparent_mode = true
+		}
+	}
 }
 
 return Plugins
