@@ -50,10 +50,7 @@ end
 pcall(require, "lsp-zero")
 
 if exist then
-	print("User config loaded successfully")
-	vim.notify("User config loaded successfully", vim.log.levels.INFO)
 else
-	print("Failed to load user config:", user_config)
 	vim.notify("Failed to load user config: " .. tostring(user_config), vim.log.levels.ERROR)
 end
 

@@ -1,6 +1,3 @@
-print("Loading user_config.lua")
-vim.notify("Attempting to load user_config.lua", vim.log.levels.INFO)
-
 local M = {}
 
 M.setup_sources = function(b)
