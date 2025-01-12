@@ -13,7 +13,7 @@ capabilities.textDocument.foldingRange = {
 	dynamicRegistration = false,
 	lineFoldingOnly = true,
 }
-local exist, user_config = pcall(require, "user.user_config")
+local exist, user_config = pcall(require, "user_config")
 lsp.format_on_save({
 	format_opts = {
 		async = false,

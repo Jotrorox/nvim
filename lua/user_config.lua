@@ -1,8 +1,8 @@
--- use a user/user_config.lua file to provide your own configuration
+print("Loading user_config.lua")
+vim.notify("Attempting to load user_config.lua", vim.log.levels.INFO)
 
 local M = {}
 
--- add any null-ls sources you want here
 M.setup_sources = function(b)
 	return {
 		b.formatting.autopep8,
@@ -10,7 +10,6 @@ M.setup_sources = function(b)
 	}
 end
 
--- add mason sources to auto-install
 M.mason_ensure_installed = {
 	null_ls = {
 		"stylua",
@@ -22,7 +21,6 @@ M.mason_ensure_installed = {
 	},
 }
 
--- add servers to be used for auto formatting here
 M.formatting_servers = {
 	["rust_analyzer"] = { "rust" },
 	["lua_ls"] = { "lua" },
@@ -34,16 +32,12 @@ M.formatting_servers = {
 	},
 }
 
--- options you put here will override or add on to the default options
 M.options = {
 	opt = {
 		confirm = true,
 	},
 }
 
--- Set any to false that you want disabled in here.
--- take a look at the autocommands file in lua/core for more information
--- Default value is true if left blank
 M.autocommands = {
 	alpha_folding = true,
 	treesitter_folds = true,
@@ -54,8 +48,6 @@ M.autocommands = {
 	cmp = true,
 }
 
--- set to false to disable plugins
--- Default value is true if left blank
 M.enable_plugins = {
 	aerial = true,
 	alpha = true,
@@ -84,7 +76,7 @@ M.enable_plugins = {
 	surround = true,
 	treesitter = true,
 	ufo = true,
-	onedark = true,
+	onedark = false,
 	project = true,
 	rainbow = true,
 	scope = true,
@@ -97,29 +89,51 @@ M.enable_plugins = {
 	zen = true,
 }
 
--- add extra plugins in here
 M.plugins = {
-	{
-		"nvim-neotest/neotest",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"nvim-treesitter/nvim-treesitter",
-			"antoinemadec/FixCursorHold.nvim",
-		},
-	},
+    {
+        "catppuccin/nvim",
+        name = "catppuccin",
+        priority = 1000,
+        lazy = false,
+        config = function()
+            require("catppuccin").setup({
+                flavour = "mocha",
+                transparent_background = true,
+                integrations = {
+                    aerial = true,
+                    alpha = true,
+                    bufferline = true,
+                    cmp = true,
+                    gitsigns = true,
+                    mason = true,
+                    neotree = true,
+                    notify = true,
+                    noice = true,
+                    telescope = true,
+                    treesitter = true,
+                    which_key = true,
+                },
+            })
+            vim.cmd.colorscheme("catppuccin")
+        end,
+    },
+    {
+        "nvim-lualine/lualine.nvim",
+        event = "VeryLazy",
+        config = function()
+            require("lualine").setup({
+                options = {
+                    theme = "catppuccin",
+                    component_separators = { left = "", right = "" },
+                    section_separators = { left = "", right = "" },
+                },
+            })
+        end,
+    },
 }
 
 M.lsp_config = {
 	clangd = {},
 }
-
--- add extra configuration options here, like extra autocmds etc.
--- feel free to create your own separate files and require them in here
-M.user_conf = function()
-	vim.cmd([[
-  autocmd VimEnter * lua vim.notify("Welcome to CyberNvim!", "info", {title = "Neovim"})]])
-	-- require("user.autocmds")
-	-- vim.cmd("colorscheme elflord")
-end
 
 return M

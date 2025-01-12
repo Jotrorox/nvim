@@ -1,3 +1,5 @@
+print("Loading core_init.lua")
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
@@ -25,7 +27,7 @@ for _, source in ipairs({
 end
 
 local enabled = require("core.utils.utils").enabled
-local exist, user_config = pcall(require, "user.user_config")
+local exist, user_config = pcall(require, "user_config")
 local group = exist and type(user_config) == "table" and user_config.enable_plugins or {}
 
 if enabled(group, "notify") then
@@ -35,8 +37,6 @@ end
 vim.api.nvim_create_user_command("CyberUpdate", function()
 	require("core.utils.utils").update_all()
 end, { desc = "Updates plugins, mason packages, treesitter parsers" })
-
-pcall(vim.cmd.colorscheme, "onedark")
 
 -- fix commentstrings to work with native nvim commenting
 if enabled(group, "treesitter") then
@@ -48,6 +48,14 @@ if enabled(group, "treesitter") then
 end
 
 pcall(require, "lsp-zero")
+
+if exist then
+	print("User config loaded successfully")
+	vim.notify("User config loaded successfully", vim.log.levels.INFO)
+else
+	print("Failed to load user config:", user_config)
+	vim.notify("Failed to load user config: " .. tostring(user_config), vim.log.levels.ERROR)
+end
 
 if exist and type(user_config) == "table" and user_config.user_conf then
 	user_config.user_conf()
