@@ -10,12 +10,10 @@ return {
 		},
 	},
 	{
-		"zaldih/themery.nvim",
-		lazy = false,
-		config = function()
-			require("themery").setup({
-				themes = {"gruvbox", "tokyonight",},
-			})
+		"shaunsingh/nord.nvim",
+		priority = 1000,
+		config = function ()
+			vim.cmd[[colorscheme nord]]
 		end
 	}
 }
