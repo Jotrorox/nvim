@@ -13,4 +13,4 @@ for opt, val in pairs(opts) do
 	vim.o[opt] = val
 end
 
-vim.cmd[[colorscheme onedark]]
+vim.cmd[[colorscheme gruvbox]] 

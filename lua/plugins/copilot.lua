@@ -16,7 +16,7 @@ return {
 					next = "<M-k>",
 				},
 			},
-			panel = { enabled = false },
+			panel = { enabled = true },
 			filetypes = {
 				markdown = true,
 				help = true,
