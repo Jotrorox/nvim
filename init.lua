@@ -100,6 +100,24 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
+-- Setting up languages not yet included in neovim
+vim.filetype.add({
+	extension = {
+		c3 = "c3",
+		c3i = "c3",
+		c3t = "c3",
+	},
+})
+
+vim.api.nvim_create_autocmd("BufReadPost", {
+	pattern = "*",
+	callback = function()
+		if vim.bo.filetype == "c3" then
+			vim.cmd("TSEnable highlight")
+		end
+	end,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]] (:help lazy.nvim.txt)
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -424,6 +442,23 @@ require("lazy").setup({
 			})
 
 			require("lspconfig").gleam.setup(capabilities)
+
+			local util = require("lspconfig/util")
+			local configs = require("lspconfig.configs")
+			if not configs.c3_lsp then
+				configs.c3_lsp = {
+					default_config = {
+						cmd = { "/home/johannes/bin/c3lsp" },
+						filetypes = { "c3", "c3i" },
+						root_dir = function(fname)
+							return util.find_git_ancestor(fname)
+						end,
+						settings = {},
+						name = "c3_lsp",
+					},
+				}
+			end
+			require("lspconfig").c3_lsp.setup({})
 		end,
 	},
 
@@ -539,6 +574,31 @@ require("lazy").setup({
 		end,
 	},
 
+	-- AI Plugins
+	{
+		"supermaven-inc/supermaven-nvim",
+		config = function()
+			require("supermaven-nvim").setup({
+				keymaps = {
+					accept_suggestion = "<Tab>",
+					clear_suggestion = "<C-]>",
+					accept_word = "<C-j>",
+				},
+				ignore_filetypes = {}, -- or { "cpp", }
+				color = {
+					suggestion_color = "#ffffff",
+					cterm = 244,
+				},
+				log_level = "info", -- set to "off" to disable logging completely
+				disable_inline_completion = false, -- disables inline completion for use with cmp
+				disable_keymaps = false, -- disables built in keymaps for more manual control
+				condition = function()
+					return false
+				end, -- condition to check for stopping supermaven, `true` means to stop supermaven when the condition is true.
+			})
+		end,
+	},
+
 	{ -- Colorscheme (Catppuccin)
 		"catppuccin/nvim",
 		name = "catppuccin",
@@ -581,9 +641,24 @@ require("lazy").setup({
 		end,
 	},
 
+	-- Language specific plugins
+	{ -- lilguys
+		"stunwin/lilguys.nvim",
+		config = function()
+			require("lilguys").setup()
+		end,
+	},
+	{
+		"wstucco/c3.nvim",
+		config = function()
+			require("c3")
+		end,
+	},
+
 	{ -- Treesitter for syntax highlighting, indentation, etc.
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate", -- Update parsers on install/update
+		event = "BufRead",
 		main = "nvim-treesitter.configs",
 		opts = { -- (:help nvim-treesitter)
 			ensure_installed = { -- Languages to install parsers for
@@ -607,10 +682,18 @@ require("lazy").setup({
 			},
 			indent = { enable = true, disable = { "ruby" } }, -- Disable TS indent for specific languages
 		},
-		-- Explore additional Treesitter modules:
-		--  - Incremental selection: :help nvim-treesitter-incremental-selection-mod
-		--  - Context: https://github.com/nvim-treesitter/nvim-treesitter-context
-		--  - Textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+		config = function()
+			local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
+			parser_config.c3 = {
+				install_info = {
+					url = "https://github.com/c3lang/tree-sitter-c3",
+					files = { "src/parser.c", "src/scanner.c" },
+					branch = "main",
+				},
+			}
+			require("nvim-treesitter.install").update({ with_sync = true })
+			require("nvim-treesitter").setup({ highlight = { enable = true } })
+		end,
 	},
 
 	{ -- Hex editor integration
