@@ -1,5 +1,4 @@
 -- Set <space> as the leader key (:help mapleader)
--- NOTE: Must be set before plugins are loaded.
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
@@ -148,6 +147,27 @@ require("lazy").setup({
 			},
 		},
 	},
+	{
+		"f-person/git-blame.nvim",
+		event = "VeryLazy",
+		opts = {
+			enabled = true,
+			message_template = " <summary> • <date> • <author> • <<sha>>", -- template for the blame message, check the Message template section for more options
+			date_format = "%m-%d-%Y %H:%M:%S", -- template for the date, check Date format section for more options
+			virtual_text_column = 1, -- virtual text start column, check Start virtual text at column section for more options
+		},
+	},
+  {
+    "NeogitOrg/neogit",
+    keys = {
+      { "<leader>gs", "<CMD>Neogit<CR>", desc = "[S]tatus" },
+    },
+    dependencies = {
+      "nvim-lua/plenary.nvim",         -- required
+      "sindrets/diffview.nvim",        -- optional - Diff integration
+      "nvim-telescope/telescope.nvim", -- optional
+    },
+  },
 
 	-- Shows pending keybinds
 	{
@@ -264,6 +284,39 @@ require("lazy").setup({
 				builtin.find_files({ cwd = vim.fn.stdpath("config") })
 			end, { desc = "[S]earch [N]eovim files" })
 		end,
+	},
+	{
+		"stevearc/oil.nvim",
+		---@module 'oil'
+		opts = {},
+		keys = {
+			{
+				"<leader>oi",
+				function()
+					require("oil").open()
+				end,
+				desc = "[O]pen [I]nfo",
+			},
+			{
+				"<leader>oc",
+				function()
+					require("oil").close()
+				end,
+				desc = "[O]pen [C]lose",
+			},
+			{
+				"<leader>ot",
+				function()
+					require("oil").toggle()
+				end,
+				desc = "[O]pen [T]oggle",
+			},
+		},
+		dependencies = {
+			{ "echasnovski/mini.icons", opts = {} },
+			{ "nvim-tree/nvim-web-devicons", opts = {} },
+		},
+		lazy = false,
 	},
 
 	-- LSP Plugins
@@ -743,6 +796,18 @@ require("lazy").setup({
 			},
 		},
 		config = function() end, -- No specific config needed here
+	},
+
+	-- Games
+	{
+		"ThePrimeagen/vim-be-good",
+		lazy = true,
+		cmd = "VimBeGood",
+	},
+	{
+		"alec-gibson/nvim-tetris",
+		lazy = true,
+		cmd = "Tetris",
 	},
 }, {
 	ui = { -- Configure lazy.nvim UI
