@@ -157,17 +157,17 @@ require("lazy").setup({
 			virtual_text_column = 1, -- virtual text start column, check Start virtual text at column section for more options
 		},
 	},
-  {
-    "NeogitOrg/neogit",
-    keys = {
-      { "<leader>gs", "<CMD>Neogit<CR>", desc = "[S]tatus" },
-    },
-    dependencies = {
-      "nvim-lua/plenary.nvim",         -- required
-      "sindrets/diffview.nvim",        -- optional - Diff integration
-      "nvim-telescope/telescope.nvim", -- optional
-    },
-  },
+	{
+		"NeogitOrg/neogit",
+		keys = {
+			{ "<leader>gs", "<CMD>Neogit<CR>", desc = "[S]tatus" },
+		},
+		dependencies = {
+			"nvim-lua/plenary.nvim", -- required
+			"sindrets/diffview.nvim", -- optional - Diff integration
+			"nvim-telescope/telescope.nvim", -- optional
+		},
+	},
 
 	-- Shows pending keybinds
 	{
@@ -628,27 +628,35 @@ require("lazy").setup({
 	},
 
 	-- AI Plugins
+	-- {
+	-- 	"supermaven-inc/supermaven-nvim",
+	-- 	config = function()
+	-- 		require("supermaven-nvim").setup({
+	--			keymaps = {
+	--					accept_suggestion = "<Tab>",
+	--				clear_suggestion = "<C-]>",
+	--			accept_word = "<C-j>",
+	--			},
+	--			ignore_filetypes = {}, -- or { "cpp", }
+	--			color = {
+	--				suggestion_color = "#ffffff",
+	--				cterm = 244,
+	--			},
+	--			log_level = "info", -- set to "off" to disable logging completely
+	--			disable_inline_completion = false, -- disables inline completion for use with cmp
+	--			disable_keymaps = false, -- disables built in keymaps for more manual control
+	--			condition = function()
+	--				return false
+	--			end, -- condition to check for stopping supermaven, `true` means to stop supermaven when the condition is true.
+	--		})
+	--	end,
+	--},
 	{
-		"supermaven-inc/supermaven-nvim",
+		"zbirenbaum/copilot.lua",
+		cmd = "Copilot",
+		event = "InsertEnter",
 		config = function()
-			require("supermaven-nvim").setup({
-				keymaps = {
-					accept_suggestion = "<Tab>",
-					clear_suggestion = "<C-]>",
-					accept_word = "<C-j>",
-				},
-				ignore_filetypes = {}, -- or { "cpp", }
-				color = {
-					suggestion_color = "#ffffff",
-					cterm = 244,
-				},
-				log_level = "info", -- set to "off" to disable logging completely
-				disable_inline_completion = false, -- disables inline completion for use with cmp
-				disable_keymaps = false, -- disables built in keymaps for more manual control
-				condition = function()
-					return false
-				end, -- condition to check for stopping supermaven, `true` means to stop supermaven when the condition is true.
-			})
+			require("copilot").setup({})
 		end,
 	},
 
