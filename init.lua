@@ -776,16 +776,17 @@ require("lazy").setup({
 	},
 
 	{
-		"ellisonleao/gruvbox.nvim",
+		"catppuccin/nvim",
+		name = "catppuccin",
 		priority = 1000,
 		config = function()
 			---@diagnostic disable-next-line: missing-fields
-			require("gruvbox").setup({
-				transparent_mode = true,
-				contrast = "",
+			require("catppuccin").setup({
+				transparent_background = true,
+				flavour = "mocha",
 			})
 
-			vim.cmd.colorscheme("gruvbox")
+			vim.cmd.colorscheme("catppuccin")
 		end,
 	},
 
@@ -940,6 +941,21 @@ require("lazy").setup({
 			vim.keymap.set("n", "<C-e>", function()
 				toggle_telescope(harpoon:list())
 			end, { desc = "Open harpoon window" })
+		end,
+	},
+
+	-- AI
+	{
+		"zbirenbaum/copilot.lua",
+		cmd = "Copilot",
+		event = "InsertEnter",
+		config = function()
+			require("copilot").setup({
+				suggestion = {
+					enabled = true,
+					auto_trigger = true,
+				},
+			})
 		end,
 	},
 }, {
