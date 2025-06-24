@@ -872,6 +872,15 @@ require("lazy").setup({
 	-- 	"ziglang/zig.vim",
 	-- 	ft = "zig",
 	-- },
+	{
+		"lervag/vimtex",
+		-- lazy = false, -- we don't want to lazy load VimTeX
+		ft = { "tex", "latex" }, -- load VimTeX for these filetypes
+		init = function()
+			vim.g.vimtex_view_method = "okular"
+			vim.g.vimtex_view_general_options = "--unique file:@pdf#src:@line@tex"
+		end,
+	},
 
 	{
 		"ThePrimeagen/vim-be-good",
@@ -946,18 +955,30 @@ require("lazy").setup({
 
 	-- AI
 	{
-		"zbirenbaum/copilot.lua",
-		cmd = "Copilot",
-		event = "InsertEnter",
+		"supermaven-inc/supermaven-nvim",
 		config = function()
-			require("copilot").setup({
-				suggestion = {
-					enabled = true,
-					auto_trigger = true,
+			require("supermaven-nvim").setup({
+				keymaps = {
+					accept_suggestion = "<Tab>",
+					clear_suggestion = "<C-]>",
+					accept_word = "<C-j>",
 				},
 			})
 		end,
 	},
+	-- {
+	-- 	"zbirenbaum/copilot.lua",
+	-- 	cmd = "Copilot",
+	-- 	event = "InsertEnter",
+	-- 	config = function()
+	-- 		require("copilot").setup({
+	-- 			suggestion = {
+	-- 				enabled = true,
+	-- 				auto_trigger = true,
+	-- 			},
+	-- 		})
+	-- 	end,
+	-- },
 }, {
 	ui = {
 		-- If you are using a Nerd Font: set icons to an empty table which will use the
