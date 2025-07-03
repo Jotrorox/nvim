@@ -786,7 +786,7 @@ require("lazy").setup({
 	-- 		vim.cmd.colorscheme("catppuccin")
 	-- 	end,
 	-- },
-	{
+	{ -- Colorscheme
 		"ellisonleao/gruvbox.nvim",
 		name = "gruvbox",
 		priority = 1000,
@@ -893,11 +893,27 @@ require("lazy").setup({
 		end,
 	},
 
+	-- Games and Fun
 	{
 		"ThePrimeagen/vim-be-good",
 		cmd = "VimBeGood",
 		lazy = true,
 	},
+	{
+		"alanfortlink/blackjack.nvim",
+		cmd = "BlackJackNewGame",
+		lazy = true,
+		config = function()
+			require("blackjack").setup({})
+		end,
+	},
+	{
+		"alec-gibson/nvim-tetris",
+		cmd = "Tetris",
+		lazy = true,
+	},
+
+	-- Actually useful shit again
 	{
 		"ThePrimeagen/harpoon",
 		branch = "harpoon2",
