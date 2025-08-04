@@ -772,34 +772,34 @@ require("lazy").setup({
 		},
 	},
 
-	-- {
-	-- 	"catppuccin/nvim",
-	-- 	name = "catppuccin",
-	-- 	priority = 1000,
-	-- 	config = function()
-	-- 		---@diagnostic disable-next-line: missing-fields
-	-- 		require("catppuccin").setup({
-	-- 			transparent_background = true,
-	-- 			flavour = "mocha",
-	-- 		})
-
-	-- 		vim.cmd.colorscheme("catppuccin")
-	-- 	end,
-	-- },
-	{ -- Colorscheme
-		"ellisonleao/gruvbox.nvim",
-		name = "gruvbox",
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
 		priority = 1000,
-		config = true,
-		opts = {
-			transparent_mode = true,
-			term_colors = true,
-			contrast = "",
-		},
-		init = function()
-			vim.cmd.colorscheme("gruvbox")
+		config = function()
+			---@diagnostic disable-next-line: missing-fields
+			require("catppuccin").setup({
+				transparent_background = true,
+				flavour = "mocha",
+			})
+
+			vim.cmd.colorscheme("catppuccin")
 		end,
 	},
+	-- { -- Colorscheme
+	-- 	"ellisonleao/gruvbox.nvim",
+	-- 	name = "gruvbox",
+	-- 	priority = 1000,
+	-- 	config = true,
+	-- 	opts = {
+	-- 		transparent_mode = true,
+	-- 		term_colors = true,
+	-- 		contrast = "",
+	-- 	},
+	-- 	init = function()
+	-- 		vim.cmd.colorscheme("gruvbox")
+	-- 	end,
+	-- },
 
 	-- Highlight todo, notes, etc in comments
 	{
@@ -884,12 +884,37 @@ require("lazy").setup({
 	-- 	ft = "zig",
 	-- },
 	{
+		"janet-lang/janet.vim",
+		ft = "janet",
+		lazy = true,
+		-- On opening a new window with janet files in the current directory, automatically
+		-- run `janet -e "(import spork/netrepl) (netrepl/server)"` in the background
+		init = function()
+			vim.cmd([[
+                autocmd BufReadPost *.janet
+                    \ if !isdirectory(expand('<afile>:p:h')) | return | endif
+                    \ call jobstart('janet -e "(import spork/netrepl) (netrepl/server)"')
+            ]])
+		end,
+	},
+	{
 		"lervag/vimtex",
 		-- lazy = false, -- we don't want to lazy load VimTeX
 		ft = { "tex", "latex" }, -- load VimTeX for these filetypes
 		init = function()
 			vim.g.vimtex_view_method = "okular"
 			vim.g.vimtex_view_general_options = "--unique file:@pdf#src:@line@tex"
+		end,
+	},
+	{
+		"Olical/conjure",
+		ft = { "clojure", "fennel", "janet", "scm", "scheme" },
+		lazy = true,
+		init = function()
+			vim.g["conjure#filetype#fennel"] = "conjure.client.fennel.stdio"
+			vim.g["conjure#client#scheme#stdio#command"] = "csi -:c"
+			vim.g["conjure#client#scheme#stdio#prompt_pattern"] = "\n-#;%d-> "
+			vim.g["conjure#client#scheme#stdio#value_prefix_pattern"] = false
 		end,
 	},
 
