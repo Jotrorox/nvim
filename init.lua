@@ -500,20 +500,15 @@ require("lazy").setup({
 		},
 	},
 
-	{ -- Colorscheme
-		"ellisonleao/gruvbox.nvim",
-		name = "gruvbox",
-		priority = 1000,
-		config = true,
-		opts = {
-			transparent_mode = true,
-			term_colors = true,
-			contrast = "",
-		},
-		init = function()
-			vim.cmd.colorscheme("gruvbox")
-		end,
-	},
+  { "catppuccin/nvim", name = "catppuccin", priority = 1000,
+    config = function()
+      require("catppuccin").setup({
+        flavour = "latte",
+        transparent_background = true,
+      })
+      vim.cmd.colorscheme("catppuccin")
+    end,
+  },
 
 	-- Highlight todo, notes, etc in comments
 	{
