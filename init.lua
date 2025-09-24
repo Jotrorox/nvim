@@ -1,15 +1,14 @@
 -- Set <space> as the leader key
--- See `:help mapleader`
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = true
+vim.g.have_nerd_font = false
 
 -- [[ Setting options ]]
--- See `:help vim.o`
 
--- Make line numbers relative
+-- Setup relative line numbers
+vim.o.number = true
 vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
@@ -19,9 +18,6 @@ vim.o.mouse = "a"
 vim.o.showmode = false
 
 -- Sync clipboard between OS and Neovim.
---  Schedule the setting after `UiEnter` because it can increase startup-time.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
 vim.schedule(function()
 	vim.o.clipboard = "unnamedplus"
 end)
@@ -60,14 +56,11 @@ vim.o.scrolloff = 10
 
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
--- See `:help 'confirm'`
 vim.o.confirm = true
 
 -- [[ Basic Keymaps ]]
---  See `:help vim.keymap.set()`
 
 -- Clear highlights on search when pressing <Esc> in normal mode
---  See `:help hlsearch`
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
 -- Diagnostic keymaps
@@ -86,25 +79,14 @@ vim.keymap.set("n", "<down>", '<cmd>echo "Use j to move!!"<CR>')
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
---
---  See `:help wincmd` for a list of all window commands
 vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 
--- Tabs and spaces
-vim.o.tabstop = 4
-vim.o.shiftwidth = 4
-vim.o.softtabstop = 4
-vim.o.expandtab = true
-
 -- [[ Basic Autocommands ]]
---  See `:help lua-guide-autocommands`
 
 -- Highlight when yanking (copying) text
---  Try it with `yap` in normal mode
---  See `:help vim.hl.on_yank()`
 vim.api.nvim_create_autocmd("TextYankPost", {
 	desc = "Highlight when yanking (copying) text",
 	group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
@@ -114,7 +96,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
---    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
@@ -130,7 +111,6 @@ rtp:prepend(lazypath)
 
 -- [[ Configure and install plugins ]]
 require("lazy").setup({
-	-- See `:help gitsigns` to understand what the configuration keys do
 	{ -- Adds git related signs to the gutter, as well as utilities for managing changes
 		"lewis6991/gitsigns.nvim",
 		opts = {
@@ -144,10 +124,12 @@ require("lazy").setup({
 		},
 	},
 
-	{ -- Showing all the configured Keybinds
+	{ -- Useful plugin to show you pending keybinds.
 		"folke/which-key.nvim",
-		event = "VimEnter",
+		event = "VimEnter", -- Sets the loading event to 'VimEnter'
 		opts = {
+			-- delay between pressing a key and opening which-key (milliseconds)
+			-- this setting is independent of vim.o.timeoutlen
 			delay = 0,
 			icons = {
 				mappings = vim.g.have_nerd_font,
@@ -183,6 +165,7 @@ require("lazy").setup({
 				},
 			},
 
+			-- Document existing key chains
 			spec = {
 				{ "<leader>s", group = "[S]earch" },
 				{ "<leader>t", group = "[T]oggle" },
@@ -209,7 +192,6 @@ require("lazy").setup({
 		},
 		config = function()
 			-- [[ Configure Telescope ]]
-			-- See `:help telescope` and `:help telescope.setup()`
 			require("telescope").setup({
 				extensions = {
 					["ui-select"] = {
@@ -235,13 +217,16 @@ require("lazy").setup({
 			vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
 			vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
 
+			-- Slightly advanced example of overriding default behavior and theme
 			vim.keymap.set("n", "<leader>/", function()
+				-- You can pass additional configuration to Telescope to change the theme, layout, etc.
 				builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
 					winblend = 10,
 					previewer = false,
 				}))
 			end, { desc = "[/] Fuzzily search in current buffer" })
 
+			-- It's also possible to pass additional configuration options.
 			vim.keymap.set("n", "<leader>s/", function()
 				builtin.live_grep({
 					grep_open_files = true,
@@ -249,6 +234,7 @@ require("lazy").setup({
 				})
 			end, { desc = "[S]earch [/] in Open Files" })
 
+			-- Shortcut for searching your Neovim configuration files
 			vim.keymap.set("n", "<leader>sn", function()
 				builtin.find_files({ cwd = vim.fn.stdpath("config") })
 			end, { desc = "[S]earch [N]eovim files" })
@@ -257,6 +243,8 @@ require("lazy").setup({
 
 	-- LSP Plugins
 	{
+		-- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
+		-- used for completion, annotations and signatures of Neovim apis
 		"folke/lazydev.nvim",
 		ft = "lua",
 		opts = {
@@ -273,8 +261,10 @@ require("lazy").setup({
 			"mason-org/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 
+			-- Useful status updates for LSP.
 			{ "j-hui/fidget.nvim", opts = {} },
 
+			-- Allows extra capabilities provided by blink.cmp
 			"saghen/blink.cmp",
 		},
 		config = function()
@@ -286,16 +276,42 @@ require("lazy").setup({
 						vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
 					end
 
+					-- Rename the variable under your cursor.
+					--  Most Language Servers support renaming across files, etc.
 					map("grn", vim.lsp.buf.rename, "[R]e[n]ame")
+
+					-- Execute a code action, usually your cursor needs to be on top of an error
+					-- or a suggestion from your LSP for this to activate.
 					map("gra", vim.lsp.buf.code_action, "[G]oto Code [A]ction", { "n", "x" })
+
+					-- Find references for the word under your cursor.
 					map("grr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
+
+					-- Jump to the implementation of the word under your cursor.
+					--  Useful when your language has ways of declaring types without an actual implementation.
 					map("gri", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
+
+					-- Jump to the definition of the word under your cursor.
+					--  This is where a variable was first declared, or where a function is defined, etc.
+					--  To jump back, press <C-t>.
 					map("grd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
+
 					map("grD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
+
+					-- Fuzzy find all the symbols in your current document.
+					--  Symbols are things like variables, functions, types, etc.
 					map("gO", require("telescope.builtin").lsp_document_symbols, "Open Document Symbols")
+
+					-- Fuzzy find all the symbols in your current workspace.
+					--  Similar to document symbols, except searches over your entire project.
 					map("gW", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Open Workspace Symbols")
+
+					-- Jump to the type of the word under your cursor.
+					--  Useful when you're not sure what type a variable is and you want to see
+					--  the definition of its *type*, not where it was *defined*.
 					map("grt", require("telescope.builtin").lsp_type_definitions, "[G]oto [T]ype Definition")
 
+					-- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
 					---@param client vim.lsp.Client
 					---@param method vim.lsp.protocol.Method
 					---@param bufnr? integer some lsp support methods only in specific files
@@ -451,9 +467,9 @@ require("lazy").setup({
 		event = "VimEnter",
 		version = "1.*",
 		dependencies = {
-			-- Snippet Engine
 			{
 				"L3MON4D3/LuaSnip",
+				version = "2.*",
 				build = (function()
 					if vim.fn.has("win32") == 1 or vim.fn.executable("make") == 0 then
 						return
@@ -500,15 +516,19 @@ require("lazy").setup({
 		},
 	},
 
-  { "catppuccin/nvim", name = "catppuccin", priority = 1000,
-    config = function()
-      require("catppuccin").setup({
-        flavour = "latte",
-        transparent_background = true,
-      })
-      vim.cmd.colorscheme("catppuccin")
-    end,
-  },
+	{ -- Colorscheme
+		"folke/tokyonight.nvim",
+		priority = 1000,
+		config = function()
+			---@diagnostic disable-next-line: missing-fields
+			require("tokyonight").setup({
+				styles = {
+					comments = { italic = false },
+				},
+			})
+			vim.cmd.colorscheme("tokyonight-night")
+		end,
+	},
 
 	-- Highlight todo, notes, etc in comments
 	{
@@ -523,10 +543,9 @@ require("lazy").setup({
 		config = function()
 			require("mini.ai").setup({ n_lines = 500 })
 			require("mini.surround").setup()
-
 			local statusline = require("mini.statusline")
 			statusline.setup({ use_icons = vim.g.have_nerd_font })
-
+			---@diagnostic disable-next-line: duplicate-set-field
 			statusline.section_location = function()
 				return "%2l:%-2v"
 			end
@@ -536,17 +555,12 @@ require("lazy").setup({
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
 		main = "nvim-treesitter.configs",
-		-- [[ Configure Treesitter ]] See `:help nvim-treesitter`
+		-- [[ Configure Treesitter ]]
 		opts = {
 			ensure_installed = {
-				"bash",
-				"c",
 				"diff",
-				"html",
 				"lua",
 				"luadoc",
-				"markdown",
-				"markdown_inline",
 				"query",
 				"vim",
 				"vimdoc",
@@ -559,142 +573,8 @@ require("lazy").setup({
 			indent = { enable = true, disable = { "ruby" } },
 		},
 	},
-
-	-- Custom Language Support
-	{
-		"janet-lang/janet.vim",
-		ft = "janet",
-		lazy = true,
-		-- On opening a new window with janet files in the current directory, automatically
-		-- run `janet -e "(import spork/netrepl) (netrepl/server)"` in the background
-		init = function()
-			vim.cmd([[
-                autocmd BufReadPost *.janet
-                    \ if !isdirectory(expand('<afile>:p:h')) | return | endif
-                    \ call jobstart('janet -e "(import spork/netrepl) (netrepl/server)"')
-            ]])
-		end,
-	},
-	{
-		"lervag/vimtex",
-		lazy = true,
-		ft = { "tex", "latex" },
-		init = function()
-			vim.g.vimtex_view_method = "okular"
-			vim.g.vimtex_view_general_options = "--unique file:@pdf#src:@line@tex"
-		end,
-	},
-	{
-		"Olical/conjure",
-		ft = { "clojure", "fennel", "janet", "scm", "scheme" },
-		lazy = true,
-		init = function()
-			vim.g["conjure#filetype#fennel"] = "conjure.client.fennel.stdio"
-			vim.g["conjure#client#scheme#stdio#command"] = "csi -:c"
-			vim.g["conjure#client#scheme#stdio#prompt_pattern"] = "\n-#;%d-> "
-			vim.g["conjure#client#scheme#stdio#value_prefix_pattern"] = false
-		end,
-	},
-
-	-- Games and Fun
-	{
-		"ThePrimeagen/vim-be-good",
-		cmd = "VimBeGood",
-		lazy = true,
-	},
-	{
-		"alanfortlink/blackjack.nvim",
-		cmd = "BlackJackNewGame",
-		lazy = true,
-		config = function()
-			require("blackjack").setup({})
-		end,
-	},
-
-	-- Actually useful shit again
-	{
-		"ThePrimeagen/harpoon",
-		branch = "harpoon2",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		lazy = false,
-		config = function()
-			local harpoon = require("harpoon")
-
-			-- REQUIRED
-			harpoon:setup()
-			-- REQUIRED
-
-			vim.keymap.set("n", "<leader>a", function()
-				harpoon:list():add()
-			end, { desc = "HAAARPPOOOON!!!" })
-			vim.keymap.set("n", "<C-e>", function()
-				harpoon.ui:toggle_quick_menu(harpoon:list())
-			end)
-
-			vim.keymap.set("n", "<C-h>", function()
-				harpoon:list():select(1)
-			end)
-			vim.keymap.set("n", "<C-t>", function()
-				harpoon:list():select(2)
-			end)
-			vim.keymap.set("n", "<C-n>", function()
-				harpoon:list():select(3)
-			end)
-			vim.keymap.set("n", "<C-s>", function()
-				harpoon:list():select(4)
-			end)
-
-			-- Toggle previous & next buffers stored within Harpoon list
-			vim.keymap.set("n", "<C-S-P>", function()
-				harpoon:list():prev()
-			end)
-			vim.keymap.set("n", "<C-S-N>", function()
-				harpoon:list():next()
-			end)
-
-			-- basic telescope configuration
-			local conf = require("telescope.config").values
-			local function toggle_telescope(harpoon_files)
-				local file_paths = {}
-				for _, item in ipairs(harpoon_files.items) do
-					table.insert(file_paths, item.value)
-				end
-
-				require("telescope.pickers")
-					.new({}, {
-						prompt_title = "Harpoon",
-						finder = require("telescope.finders").new_table({
-							results = file_paths,
-						}),
-						previewer = conf.file_previewer({}),
-						sorter = conf.generic_sorter({}),
-					})
-					:find()
-			end
-
-			vim.keymap.set("n", "<C-e>", function()
-				toggle_telescope(harpoon:list())
-			end, { desc = "Open harpoon window" })
-		end,
-	},
-
-	{ -- AI autocomplection
-		"zbirenbaum/copilot.lua",
-		cmd = "Copilot",
-		event = "InsertEnter",
-		config = function()
-			require("copilot").setup({
-				suggestion = {
-					enabled = true,
-					auto_trigger = true,
-				},
-			})
-		end,
-	},
 }, {
 	ui = {
-		-- If you are using a Nerd Font: set icons to an empty table which will use the
-		-- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
 		icons = vim.g.have_nerd_font and {} or {
 			cmd = "⌘",
 			config = "🛠",
@@ -712,6 +592,3 @@ require("lazy").setup({
 		},
 	},
 })
-
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
