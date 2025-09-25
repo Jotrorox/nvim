@@ -3,7 +3,7 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 
@@ -57,6 +57,13 @@ vim.o.scrolloff = 10
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
 vim.o.confirm = true
+
+-- Set indentation to 4 spaces
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 4
+vim.opt.expandtab = true
+vim.opt.smartindent = true
 
 -- [[ Basic Keymaps ]]
 
@@ -429,6 +436,18 @@ require("lazy").setup({
 		end,
 	},
 
+	{
+		"zbirenbaum/copilot.lua",
+		requires = {
+			"copilotlsp-nvim/copilot-lsp",
+		},
+		cmd = "Copilot",
+		event = "InsertEnter",
+		config = function()
+			require("copilot").setup({})
+		end,
+	},
+
 	{ -- Autoformat
 		"stevearc/conform.nvim",
 		event = { "BufWritePre" },
@@ -513,6 +532,40 @@ require("lazy").setup({
 			snippets = { preset = "luasnip" },
 			fuzzy = { implementation = "lua" },
 			signature = { enabled = true },
+		},
+	},
+
+	{
+		"CRAG666/betterTerm.nvim",
+		keys = {
+			{
+				mode = { "n", "t" },
+				"<C-;>",
+				function()
+					require("betterTerm").open()
+				end,
+				desc = "Open BetterTerm 0",
+			},
+			{
+				mode = { "n", "t" },
+				"<C-/>",
+				function()
+					require("betterTerm").open(1)
+				end,
+				desc = "Open BetterTerm 1",
+			},
+			{
+				"<leader>tt",
+				function()
+					require("betterTerm").select()
+				end,
+				desc = "Select terminal",
+			},
+		},
+		opts = {
+			position = "bot",
+			size = 20,
+			jump_tab_mapping = "<A-$tab>",
 		},
 	},
 
