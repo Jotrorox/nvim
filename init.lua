@@ -77,6 +77,7 @@ vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagn
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+vim.keymap.set("t", "<leader>e", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
 -- TIP: Disable arrow keys in normal mode
 vim.keymap.set("n", "<left>", '<cmd>echo "Use h to move!!"<CR>')
@@ -528,7 +529,7 @@ require("lazy").setup({
 		keys = {
 			{
 				mode = { "n", "t" },
-				"<C-;>",
+				"<leader>tn",
 				function()
 					require("betterTerm").open()
 				end,
@@ -536,7 +537,7 @@ require("lazy").setup({
 			},
 			{
 				mode = { "n", "t" },
-				"<C-/>",
+				"<leader>tm",
 				function()
 					require("betterTerm").open(1)
 				end,
@@ -614,82 +615,6 @@ require("lazy").setup({
 			indent = { enable = true, disable = { "ruby" } },
 		},
 	},
-	{
-		"Exafunction/windsurf.nvim",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"hrsh7th/nvim-cmp",
-		},
-		config = function()
-			require("codeium").setup({})
-		end,
-	},
-	-- {
-	-- 	"yetone/avante.nvim",
-	-- 	build = vim.fn.has("win32") ~= 0
-	-- 			and "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
-	-- 		or "make",
-	-- 	event = "VeryLazy",
-	-- 	version = false, -- Never set this value to "*"! Never!
-	-- 	---@module 'avante'
-	-- 	---@type avante.Config
-	-- 	opts = {
-	-- 		instructions_file = "avante.md",
-	-- 		provider = "claude",
-	-- 		providers = {
-	-- 			claude = {
-	-- 				endpoint = "https://api.anthropic.com",
-	-- 				model = "claude-sonnet-4-20250514",
-	-- 				timeout = 30000, -- Timeout in milliseconds
-	-- 				extra_request_body = {
-	-- 					temperature = 0.75,
-	-- 					max_tokens = 20480,
-	-- 				},
-	-- 			},
-	-- 			moonshot = {
-	-- 				endpoint = "https://api.moonshot.ai/v1",
-	-- 				model = "kimi-k2-0711-preview",
-	-- 				timeout = 30000, -- Timeout in milliseconds
-	-- 				extra_request_body = {
-	-- 					temperature = 0.75,
-	-- 					max_tokens = 32768,
-	-- 				},
-	-- 			},
-	-- 		},
-	-- 	},
-	-- 	dependencies = {
-	-- 		"nvim-lua/plenary.nvim",
-	-- 		"MunifTanjim/nui.nvim",
-	-- 		"nvim-mini/mini.pick",
-	-- 		"nvim-telescope/telescope.nvim",
-	-- 		"hrsh7th/nvim-cmp",
-	-- 		"ibhagwan/fzf-lua",
-	-- 		"stevearc/dressing.nvim",
-	-- 		"folke/snacks.nvim",
-	-- 		"nvim-tree/nvim-web-devicons",
-	-- 		{
-	-- 			"HakonHarnes/img-clip.nvim",
-	-- 			event = "VeryLazy",
-	-- 			opts = {
-	-- 				default = {
-	-- 					embed_image_as_base64 = false,
-	-- 					prompt_for_file_name = false,
-	-- 					drag_and_drop = {
-	-- 						insert_mode = true,
-	-- 					},
-	-- 					use_absolute_path = true,
-	-- 				},
-	-- 			},
-	-- 		},
-	-- 		{
-	-- 			"MeanderingProgrammer/render-markdown.nvim",
-	-- 			opts = {
-	-- 				file_types = { "markdown", "Avante" },
-	-- 			},
-	-- 			ft = { "markdown", "Avante" },
-	-- 		},
-	-- 	},
-	-- },
 }, {
 	ui = {
 		icons = vim.g.have_nerd_font and {} or {
