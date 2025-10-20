@@ -559,16 +559,13 @@ require("lazy").setup({
 	},
 
 	{ -- Colorscheme
-		"folke/tokyonight.nvim",
+		"ellisonleao/gruvbox.nvim",
 		priority = 1000,
 		config = function()
-			---@diagnostic disable-next-line: missing-fields
-			require("tokyonight").setup({
-				styles = {
-					comments = { italic = false },
-				},
+			require("gruvbox").setup({
+				transparent_mode = true,
 			})
-			vim.cmd.colorscheme("tokyonight-night")
+			vim.cmd("colorscheme gruvbox")
 		end,
 	},
 
