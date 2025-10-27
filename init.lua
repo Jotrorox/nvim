@@ -558,14 +558,98 @@ require("lazy").setup({
 		},
 	},
 
-	{ -- Colorscheme
-		"ellisonleao/gruvbox.nvim",
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
 		priority = 1000,
 		config = function()
-			require("gruvbox").setup({
-				transparent_mode = true,
+			require("catppuccin").setup({
+				flavour = "mocha",
+				transparent_background = true,
+				auto_integrations = true,
 			})
-			vim.cmd("colorscheme gruvbox")
+
+			vim.cmd.colorscheme("catppuccin")
+		end,
+	},
+
+	{
+		"alanfortlink/blackjack.nvim",
+		cmd = "BlackJackNewGame",
+		requires = { "nvim-lua/plenary.nvim" },
+		config = function()
+			require("blackjack").setup({
+				card_style = "mini", -- Can be "mini" or "large".
+				suit_style = "black", -- Can be "black" or "white".
+				keybindings = {
+					["next"] = "j",
+					["finish"] = "k",
+					["quit"] = "q",
+				},
+			})
+		end,
+	},
+
+	{
+		"ThePrimeagen/vim-be-good",
+		cmd = "VimBeGood",
+	},
+
+	{
+		"supermaven-inc/supermaven-nvim",
+		event = { "BufEnter" },
+		config = function()
+			require("supermaven-nvim").setup({
+				keymaps = {
+					accept_suggestion = "<Tab>",
+					clear_suggestion = "<C-]>",
+					accept_word = "<C-j>",
+				},
+			})
+		end,
+	},
+
+	{ -- HARPPPPOOOOOOOONNNNN
+		"ThePrimeagen/harpoon",
+		branch = "harpoon2",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		config = function()
+			local harpoon = require("harpoon")
+			harpoon:setup({})
+
+			local conf = require("telescope.config").values
+			local function toggle_telescope(harpoon_files)
+				local file_paths = {}
+				for _, item in ipairs(harpoon_files.items) do
+					table.insert(file_paths, item.value)
+				end
+
+				require("telescope.pickers")
+					.new({}, {
+						prompt_title = "Harpoon",
+						finder = require("telescope.finders").new_table({
+							results = file_paths,
+						}),
+						previewer = conf.file_previewer({}),
+						sorter = conf.generic_sorter({}),
+					})
+					:find()
+			end
+
+			vim.keymap.set("n", "<C-e>", function()
+				toggle_telescope(harpoon:list())
+			end, { desc = "Open harpoon window" })
+
+			vim.keymap.set("n", "<leader>a", function()
+				harpoon:list():add()
+			end, { desc = "Add a Window to the List" })
+
+			vim.keymap.set("n", "<C-S-P>", function()
+				harpoon:list():prev()
+			end, { desc = "Cycle to the previos in the List" })
+			vim.keymap.set("n", "<C-S-N>", function()
+				harpoon:list():next()
+			end, { desc = "Cycle to the next in the List" })
 		end,
 	},
 
