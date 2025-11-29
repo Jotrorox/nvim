@@ -525,68 +525,6 @@ require("lazy").setup({
 	},
 
 	{
-		"zbirenbaum/copilot.lua",
-		requires = {
-			"copilotlsp-nvim/copilot-lsp", -- (optional) for NES functionality
-		},
-		cmd = "Copilot",
-		event = "InsertEnter",
-		config = function()
-			require("copilot").setup({
-				suggestion = {
-					enabled = true,
-					auto_trigger = true,
-					hide_during_completion = true,
-					debounce = 75,
-					trigger_on_accept = true,
-					keymap = {
-						accept = "<M-l>",
-						accept_word = false,
-						accept_line = false,
-						next = "<M-]>",
-						prev = "<M-[>",
-						dismiss = "<C-]>",
-					},
-				},
-			})
-		end,
-	},
-
-	{
-		"CRAG666/betterTerm.nvim",
-		keys = {
-			{
-				mode = { "n", "t" },
-				"<leader>tn",
-				function()
-					require("betterTerm").open()
-				end,
-				desc = "Open BetterTerm 0",
-			},
-			{
-				mode = { "n", "t" },
-				"<leader>tm",
-				function()
-					require("betterTerm").open(1)
-				end,
-				desc = "Open BetterTerm 1",
-			},
-			{
-				"<leader>tt",
-				function()
-					require("betterTerm").select()
-				end,
-				desc = "Select terminal",
-			},
-		},
-		opts = {
-			position = "bot",
-			size = 20,
-			jump_tab_mapping = "<A-$tab>",
-		},
-	},
-
-	{
 		"catppuccin/nvim",
 		name = "catppuccin",
 		priority = 1000,
@@ -599,28 +537,6 @@ require("lazy").setup({
 
 			vim.cmd.colorscheme("catppuccin")
 		end,
-	},
-
-	{
-		"alanfortlink/blackjack.nvim",
-		cmd = "BlackJackNewGame",
-		requires = { "nvim-lua/plenary.nvim" },
-		config = function()
-			require("blackjack").setup({
-				card_style = "mini", -- Can be "mini" or "large".
-				suit_style = "black", -- Can be "black" or "white".
-				keybindings = {
-					["next"] = "j",
-					["finish"] = "k",
-					["quit"] = "q",
-				},
-			})
-		end,
-	},
-
-	{
-		"ThePrimeagen/vim-be-good",
-		cmd = "VimBeGood",
 	},
 
 	{ -- HARPPPPOOOOOOOONNNNN
@@ -667,14 +583,6 @@ require("lazy").setup({
 		end,
 	},
 
-	-- Highlight todo, notes, etc in comments
-	{
-		"folke/todo-comments.nvim",
-		event = "VimEnter",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		opts = { signs = false },
-	},
-
 	{ -- Collection of various small independent plugins/modules
 		"echasnovski/mini.nvim",
 		config = function()
@@ -688,6 +596,7 @@ require("lazy").setup({
 			end
 		end,
 	},
+
 	{ -- Highlight, edit, and navigate code
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
