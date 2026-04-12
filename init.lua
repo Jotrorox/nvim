@@ -78,8 +78,8 @@ require("lazy").setup({
     "williamboman/mason-lspconfig.nvim",
     config = function()
       require("mason-lspconfig").setup({
-        ensure_installed = { "clangd", "cmake" },
-        automatic_enable = false,
+        ensure_installed = { "clangd" },
+        automatic_enable = true,
       })
 
       vim.lsp.config("clangd", {
@@ -91,10 +91,7 @@ require("lazy").setup({
         },
       })
 
-      vim.lsp.config("cmake", {})
-
       vim.lsp.enable("clangd")
-      vim.lsp.enable("cmake")
     end,
   },
 
