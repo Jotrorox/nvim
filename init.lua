@@ -1,120 +1,158 @@
-vim.g.mapleader = " "
+vim.pack.add {
+    { src = 'https://github.com/neovim/nvim-lspconfig' },
+    { src = 'https://github.com/mason-org/mason.nvim' },
+    { src = 'https://github.com/mason-org/mason-lspconfig.nvim' },
+    { src = 'https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim' },
+    { src = 'https://github.com/gbprod/nord.nvim' },
+    { src = 'https://github.com/folke/which-key.nvim' },
+    { src = 'https://github.com/nvim-lua/plenary.nvim' },
+    { src = 'https://github.com/nvim-telescope/telescope.nvim' },
+}
 
--- Editor defaults
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 4
+vim.opt.expandtab = true
+
 vim.opt.number = true
 vim.opt.relativenumber = true
-vim.opt.termguicolors = true
-vim.opt.signcolumn = "yes"
-vim.opt.clipboard = "unnamedplus"
-vim.opt.updatetime = 200
+vim.opt.cursorline = true
+vim.opt.scrolloff = 4
+
 vim.opt.mouse = "a"
 
-vim.opt.expandtab = true
-vim.opt.shiftwidth = 2
-vim.opt.tabstop = 2
-vim.opt.softtabstop = 2
-vim.opt.smartindent = true
+vim.opt.clipboard = "unnamedplus"
 
-vim.opt.wrap = false
-vim.opt.cursorline = true
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-vim.opt.splitright = true
-vim.opt.splitbelow = true
-vim.opt.scrolloff = 8
-vim.opt.sidescrolloff = 8
-vim.opt.undofile = true
-vim.opt.swapfile = false
-vim.opt.backup = false
-vim.opt.completeopt = { "menuone", "noselect" }
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 
--- Bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable",
-    lazypath,
-  })
-end
-vim.opt.rtp:prepend(lazypath)
+require('mason').setup()
+require('mason-lspconfig').setup()
+require('mason-tool-installer').setup({
+    ensure_installed = {
+        "lua_ls",
+    }
+})
 
-require("lazy").setup({
-  -- Nord theme
-  {
-    "shaunsingh/nord.nvim",
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme("nord")
-    end,
-  },
-
-  -- Fuzzy finder
-  {
-    "nvim-telescope/telescope.nvim",
-    tag = "0.1.8",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    keys = {
-      { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find files" },
-      { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Live grep" },
-      { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
-    },
-  },
-
-  -- LSP
-  {
-    "neovim/nvim-lspconfig",
-  },
-  {
-    "williamboman/mason.nvim",
-    config = function()
-      require("mason").setup()
-    end,
-  },
-  {
-    "williamboman/mason-lspconfig.nvim",
-    config = function()
-      require("mason-lspconfig").setup({
-        ensure_installed = { "clangd" },
-        automatic_enable = true,
-      })
-
-      vim.lsp.config("clangd", {
-        cmd = {
-          "clangd",
-          "--background-index",
-          "--clang-tidy",
-          "--completion-style=detailed",
+vim.lsp.config('lua_ls', {
+    settings = {
+        Lua = {
+            runtime = {
+                version = 'LuaJIT',
+            },
+            diagnostics = {
+                globals = {
+                    'vim',
+                    'require'
+                },
+            },
+            workspace = {
+                library = vim.api.nvim_get_runtime_file("", true),
+            },
+            telemetry = {
+                enable = false,
+            },
         },
-      })
-
-      vim.lsp.enable("clangd")
-    end,
-  },
-
-  -- CMake helper
-  {
-    "Civitasv/cmake-tools.nvim",
-    ft = { "c", "cpp", "cmake" },
-    config = function()
-      require("cmake-tools").setup({})
-    end,
-  },
+    },
 })
 
--- LSP keymaps
-vim.api.nvim_create_autocmd("LspAttach", {
-  callback = function(ev)
-    local opts = { buffer = ev.buf, noremap = true, silent = true }
-
-    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-    vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-    vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-    vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
-  end,
+require('nord').setup({
+    transparent = true,
+    terminal_colors = true,
 })
+vim.cmd.colorscheme("nord")
+
+require('telescope').setup({
+    defaults = {
+      layout_strategy = "horizontal",
+    },
+    pickers = {
+      find_files = { theme = "dropdown", previewer = false },
+      oldfiles = { theme = "dropdown", previewer = false },
+      buffers = { theme = "dropdown", previewer = false },
+    },
+  })
+
+local builtin = require("telescope.builtin")
+
+-- Grouped under <leader>f -> "Find"
+vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find Files" })
+vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Live Grep" })
+vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Find Buffers" })
+vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Find Help" })
+vim.keymap.set("n", "<leader>fr", builtin.oldfiles, { desc = "Recent Files" })
+vim.keymap.set("n", "<leader>fc", builtin.current_buffer_fuzzy_find, { desc = "Fuzzy Current Buffer" })
+vim.keymap.set("n", "<leader>fs", builtin.grep_string, { desc = "Grep Word Under Cursor" })
+vim.keymap.set("n", "<leader>fk", builtin.keymaps, { desc = "Find Keymaps" })
+
+-- [e] Explorer
+vim.keymap.set("n", "<leader>e", "<cmd>Explore<cr>", { desc = "File Explorer (netrw)" })
+vim.keymap.set("n", "<leader>es", "<cmd>Sexplore<cr>", { desc = "Explorer Horizontal Split" })
+vim.keymap.set("n", "<leader>ev", "<cmd>Vexplore<cr>", { desc = "Explorer Vertical Split" })
+
+-- [b] Buffer
+vim.keymap.set("n", "<leader>bn", "<cmd>bnext<cr>", { desc = "Next Buffer" })
+vim.keymap.set("n", "<leader>bp", "<cmd>bprevious<cr>", { desc = "Previous Buffer" })
+vim.keymap.set("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Delete Buffer" })
+vim.keymap.set("n", "<leader>bD", "<cmd>bdelete!<cr>", { desc = "Force Delete Buffer" })
+
+-- [w] Window / Split
+vim.keymap.set("n", "<leader>ws", "<cmd>split<cr>", { desc = "Horizontal Split" })
+vim.keymap.set("n", "<leader>wv", "<cmd>vsplit<cr>", { desc = "Vertical Split" })
+vim.keymap.set("n", "<leader>wc", "<cmd>close<cr>", { desc = "Close Window" })
+vim.keymap.set("n", "<leader>wo", "<cmd>only<cr>", { desc = "Close Other Windows" })
+
+-- [q] Quit
+vim.keymap.set("n", "<leader>qq", "<cmd>q<cr>", { desc = "Quit" })
+vim.keymap.set("n", "<leader>qQ", "<cmd>q!<cr>", { desc = "Force Quit" })
+vim.keymap.set("n", "<leader>qa", "<cmd>qa<cr>", { desc = "Quit All" })
+
+-- [s] Save
+vim.keymap.set("n", "<leader>ss", "<cmd>w<cr>", { desc = "Save File" })
+vim.keymap.set("n", "<leader>sS", "<cmd>wa<cr>", { desc = "Save All" })
+
+-- [h] Highlight / Help
+vim.keymap.set("n", "<leader>hh", "<cmd>nohlsearch<cr>", { desc = "Clear Highlights" })
+
+-- [d] Delete to void register (don't overwrite clipboard)
+vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete to Void" })
+
+-- [p] Paste without yanking replaced text
+vim.keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste Without Yank" })
+
+-- [x] Quick fix / diagnostics (placeholder group)
+vim.keymap.set("n", "<leader>xx", vim.diagnostic.setloclist, { desc = "Diagnostic List" })
+
+-- Window navigation
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Go to Left Window" })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Go to Down Window" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Go to Up Window" })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to Right Window" })
+
+-- Keep cursor centered when scrolling / searching
+vim.keymap.set("n", "<C-d>", "<C-d>zz")
+vim.keymap.set("n", "<C-u>", "<C-u>zz")
+vim.keymap.set("n", "n", "nzzzv")
+vim.keymap.set("n", "N", "Nzzzv")
+
+-- Move selected lines up/down in visual mode
+vim.keymap.set("v", "J", ":m '>+1<cr>gv=gv")
+vim.keymap.set("v", "K", ":m '<-2<cr>gv=gv")
+
+-- Better indenting (stay in visual mode)
+vim.keymap.set("v", "<", "<gv")
+vim.keymap.set("v", ">", ">gv")
+
+local wk = require('which-key')
+wk.add({
+    { "<leader>b", group = "Buffer" },
+    { "<leader>e", group = "Explorer" },
+    { "<leader>f", group = "Find (Telescope)" },
+    { "<leader>w", group = "Window" },
+    { "<leader>q", group = "Quit" },
+    { "<leader>s", group = "Save" },
+    { "<leader>h", group = "Help/Highlight" },
+    { "<leader>d", group = "Void Delete" },
+    { "<leader>x", group = "Diagnostics" },
+})
+
