@@ -106,6 +106,44 @@ now(function()
 end)
 
 now(function()
+  add({ source = "folke/which-key.nvim" })
+
+  local wk = require("which-key")
+
+  wk.setup({
+    delay = 250,
+    preset = "classic",
+    icons = {
+      mappings = vim.g.have_nerd_font ~= false,
+    },
+    win = {
+      border = "rounded",
+      padding = { 1, 2 },
+      wo = {
+        winblend = 10,
+      },
+    },
+    layout = {
+      spacing = 4,
+      width = {
+        min = 20,
+        max = 50,
+      },
+    },
+  })
+
+  wk.add({
+    { "<leader>f", group = "find/files" },
+    { "<leader>g", group = "git" },
+    { "<leader>n", group = "notifications" },
+    { "<leader>s", group = "start" },
+    { "<leader>?", function()
+      wk.show({ global = false })
+    end, desc = "Buffer local keymaps" },
+  })
+end)
+
+now(function()
   local notify = require("mini.notify")
 
   notify.setup({
@@ -207,6 +245,80 @@ now(function()
   map("n", "<leader>f.", function()
     MiniPick.builtin.files(nil, { source = { cwd = vim.fn.expand("%:p:h") } })
   end, "Find files beside buffer")
+end)
+
+now(function()
+  local files = require("mini.files")
+
+  local show_dotfiles = true
+  local filter_show = function()
+    return true
+  end
+  local filter_hide = function(fs_entry)
+    return not vim.startswith(fs_entry.name, ".")
+  end
+
+  files.setup({
+    mappings = {
+      close = "q",
+      go_in = "l",
+      go_in_plus = "<CR>",
+      go_out = "h",
+      go_out_plus = "H",
+      mark_goto = "'",
+      mark_set = "m",
+      reset = "<BS>",
+      reveal_cwd = "@",
+      show_help = "g?",
+      synchronize = "s",
+      trim_left = "<",
+      trim_right = ">",
+    },
+    options = {
+      permanent_delete = false,
+      use_as_default_explorer = true,
+    },
+    windows = {
+      max_number = 4,
+      preview = true,
+      width_focus = 35,
+      width_nofocus = 18,
+      width_preview = 70,
+    },
+  })
+
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "MiniFilesBufferCreate",
+    callback = function(args)
+      vim.keymap.set("n", "g.", function()
+        show_dotfiles = not show_dotfiles
+        files.refresh({
+          content = {
+            filter = show_dotfiles and filter_show or filter_hide,
+          },
+        })
+      end, { buffer = args.data.buf_id, desc = "Toggle dotfiles" })
+    end,
+  })
+
+  local open_current = function(use_latest)
+    local path = vim.api.nvim_buf_get_name(0)
+    files.open(path ~= "" and path or nil, use_latest)
+  end
+
+  map("n", "-", function()
+    if not files.close() then
+      open_current(true)
+    end
+  end, "Toggle file explorer")
+
+  map("n", "<leader>fo", function()
+    files.open(nil, false)
+  end, "Open file explorer")
+
+  map("n", "<leader>fO", function()
+    open_current(false)
+  end, "Open explorer beside buffer")
 end)
 
 now(function()
